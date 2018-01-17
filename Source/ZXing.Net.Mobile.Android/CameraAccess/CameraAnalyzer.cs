@@ -129,17 +129,27 @@ namespace ZXing.Mobile.CameraAccess
             // use last value for performance gain
             var cDegrees = _cameraController.LastCameraDisplayOrientationDegree;
 
-            if (cDegrees == 90 || cDegrees == 270)
-            {
-                rotate = true;
-                newWidth = height;
-                newHeight = width;
-            }
+            //if (cDegrees == 90 || cDegrees == 270)
+            //{
+            //    rotate = true;
+            //    newWidth = height;
+            //    newHeight = width;
+            //}
 
             ZXing.Result result = null;
             var start = PerformanceCounter.Start();
 
-            LuminanceSource fast = new FastJavaByteArrayYUVLuminanceSource(fastArray, width, height, 0, 0, width, height); // _area.Left, _area.Top, _area.Width, _area.Height);
+            //LuminanceSource fast = new FastJavaByteArrayYUVLuminanceSource(fastArray, width, height, 0, 0, width, height); // _area.Left, _area.Top, _area.Width, _area.Height);
+            // cut square in the middle
+            LuminanceSource fast = new FastJavaByteArrayYUVLuminanceSource(
+                fastArray,
+                width,
+                height,
+                (width - Math.Min(width, height)) / 2,
+                (height - Math.Min(width, height)) / 2,
+                Math.Min(width, height),
+                Math.Min(width, height)
+                );
             if (rotate)
                 fast = fast.rotateCounterClockwise();
 

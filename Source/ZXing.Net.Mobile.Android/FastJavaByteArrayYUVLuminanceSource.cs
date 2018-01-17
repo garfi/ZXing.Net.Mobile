@@ -33,7 +33,7 @@ namespace ZXing.Mobile
     /// was authored by
     /// @author dswitkin@google.com (Daniel Switkin)
     /// </remarks>
-    public sealed class FastJavaByteArrayYUVLuminanceSource : BaseLuminanceSource
+    public sealed class FastJavaByteArrayYUVLuminanceSource : LuminanceSource //BaseLuminanceSource
     {
         private readonly FastJavaByteArray _yuv;
         private readonly int _dataWidth;
@@ -112,6 +112,8 @@ namespace ZXing.Mobile
             return row;
         }
 
+        static private byte[] matrix;
+
         override public byte[] Matrix
         {
             get
@@ -120,7 +122,12 @@ namespace ZXing.Mobile
                 int height = Height;
 
                 int area = width * height;
-                byte[] matrix = new byte[area];
+                if (matrix == null)
+                    matrix = new byte[area];
+                if (matrix.Length != area)
+                    //throw new Exception("area different than matrix size");
+                    matrix = new byte[area];
+                //byte[] matrix = new byte[area];
                 int inputOffset = _top * _dataWidth + _left;
 
                 // If the width matches the full width of the underlying data, perform a single copy.
@@ -169,11 +176,11 @@ namespace ZXing.Mobile
                 height);
         }
 
-        protected override LuminanceSource CreateLuminanceSource(byte[] newLuminances, int width, int height)
-        {
-            // Called when rotating. 
-            // todo: This partially defeats the purpose as we traffic in byte[] luminances
-            return new PlanarYUVLuminanceSource(newLuminances, width, height, 0, 0, width, height, false);
-        }
+        //protected override LuminanceSource CreateLuminanceSource(byte[] newLuminances, int width, int height)
+        //{
+        //    // Called when rotating. 
+        //    // todo: This partially defeats the purpose as we traffic in byte[] luminances
+        //    return new PlanarYUVLuminanceSource(newLuminances, width, height, 0, 0, width, height, false);
+        //}
     }
 }
